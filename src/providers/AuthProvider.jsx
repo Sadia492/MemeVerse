@@ -22,6 +22,7 @@ export default function AuthProvider({ children }) {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
+  console.log(auth);
 
   const signOutUser = () => {
     setLoading(true);

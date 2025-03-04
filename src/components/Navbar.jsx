@@ -5,13 +5,20 @@ import React, { useContext, useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
 import { authContext } from "@/providers/AuthProvider";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
   const router = useRouter();
-  const { user } = useContext(authContext);
+  const { user, signOutUser } = useContext(authContext);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [theme, setTheme] = useState("light"); // Default to light
+
+  const handleSignOut = () => {
+    signOutUser().then(() => {
+      toast.success("Logout successful");
+    });
+  };
 
   // Scroll effect for navbar
   useEffect(() => {
@@ -136,12 +143,12 @@ export default function Navbar() {
                   >
                     <li>Dashboard</li>
                   </Link>
-                  <Link
-                    // onClick={handleSignOut}
+                  <button
+                    onClick={handleSignOut}
                     className="btn bg-gradient-to-r from-primary to-secondary text-white"
                   >
                     Logout
-                  </Link>
+                  </button>
                 </ul>
               </div>
             </>
