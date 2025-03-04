@@ -3,31 +3,57 @@ import MemeCard from "@/components/MemeCard";
 import { MemeContext } from "@/providers/MemeProvider";
 import React, { useContext, useEffect, useState } from "react";
 
-export default function page() {
+export default function Page() {
   const { filteredMemes, category, setCategory } = useContext(MemeContext);
-  const [searchQuery, setSearchQuery] = useState(""); // 🔹 State for search query
-  const [searchedMemes, setSearchedMemes] = useState(filteredMemes); // 🔹 State for filtered memes
-  console.log(filteredMemes);
+  const [searchQuery, setSearchQuery] = useState(""); // 🔹 Search state
+  const [searchedMemes, setSearchedMemes] = useState([]); // 🔹 State for filtered memes
+  const [sortBy, setSortBy] = useState(""); // 🔹 Sorting state
 
-  // 🔹 Update search results when memes or searchQuery change
+  console.log("Filtered Memes:", filteredMemes);
+
+  // 🔹 Get likes & comments from localStorage
+  const getMemeStats = (id) => {
+    const likes = parseInt(localStorage.getItem(`likes-${id}`)) || 0;
+    const comments = JSON.parse(localStorage.getItem(`comments-${id}`)) || []; // Retrieve comments array
+    return { likes, commentsCount: comments.length }; // Return the number of comments
+  };
+
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setSearchedMemes(filteredMemes); // Show all memes if no search input
-    } else {
-      const filtered = filteredMemes.filter(
-        (meme) => meme.name.toLowerCase().includes(searchQuery.toLowerCase()) // Use 'name' instead of 'title'
+    let memesWithStats = filteredMemes.map((meme) => {
+      const stats = getMemeStats(meme.id);
+      return { ...meme, ...stats };
+    });
+
+    if (searchQuery.trim() !== "") {
+      memesWithStats = memesWithStats.filter((meme) =>
+        meme.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setSearchedMemes(filtered);
     }
-  }, [searchQuery, filteredMemes]);
+
+    // 🔹 Apply sorting
+    if (sortBy === "likes") {
+      memesWithStats = [...memesWithStats].sort((a, b) => b.likes - a.likes);
+    } else if (sortBy === "date") {
+      memesWithStats = [...memesWithStats].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+    } else if (sortBy === "comments") {
+      memesWithStats = [...memesWithStats].sort(
+        (a, b) => b.commentsCount - a.commentsCount // Sort by the number of comments
+      );
+    }
+
+    setSearchedMemes(memesWithStats);
+  }, [searchQuery, filteredMemes, sortBy]);
+
   return (
     <div className="mt-24">
       <div className="drawer lg:drawer-open">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
           {/* Page content here */}
-          {/* 🔹 Search Bar */}
-          <div className="mb-4">
+          {/* 🔹 Search & Sort Bar */}
+          <div className="mb-4 flex gap-4">
             <input
               type="text"
               placeholder="Search memes..."
@@ -35,7 +61,18 @@ export default function page() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+
+            <select
+              className="select select-bordered"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="">Sort By</option>
+              <option value="likes">Most Liked</option>
+              <option value="comments">Most Commented</option>
+            </select>
           </div>
+
           <div>
             <div>
               <button onClick={() => setCategory("Trending")} className="btn">
@@ -51,6 +88,7 @@ export default function page() {
                 Random
               </button>
             </div>
+
             {/* 🔹 Meme Grid */}
             <div className="grid grid-cols-2 gap-6">
               {searchedMemes.length > 0 ? (

@@ -5,16 +5,25 @@ import { createContext, useState, useEffect } from "react";
 export const MemeContext = createContext();
 
 export const MemeProvider = ({ children }) => {
-  const [memes, setMemes] = useState([]);
+  const [memes, setMemes] = useState([]); // All memes (API + LocalStorage)
   const [filteredMemes, setFilteredMemes] = useState([]);
   const [category, setCategory] = useState("Trending");
+  console.log(memes);
 
-  // Fetch memes from API
+  // Retrieve new memes from localStorage
+  const getNewMemesFromLocalStorage = () => {
+    return JSON.parse(localStorage.getItem("memes")) || [];
+  };
+
+  // Fetch memes from API and merge with stored memes
   useEffect(() => {
     const fetchMemes = async () => {
       try {
         const { data } = await axios.get("https://api.imgflip.com/get_memes");
-        setMemes(data.data.memes); // Show top 10 memes
+        const apiMemes = data.data.memes; // API memes
+        const storedMemes = getNewMemesFromLocalStorage(); // LocalStorage memes
+
+        setMemes([...apiMemes, ...storedMemes]); // Merge both
       } catch (error) {
         console.error("Error fetching memes:", error);
       }
@@ -29,7 +38,7 @@ export const MemeProvider = ({ children }) => {
     if (category === "Trending") {
       categorizedMemes = memes.slice(0, 20); // First 20 for Trending
     } else if (category === "New") {
-      categorizedMemes = memes.slice(20, 40); // 21-40 for New
+      categorizedMemes = memes.filter((meme) => meme.category === "new"); // Extract only "New" memes
     } else if (category === "Classic") {
       categorizedMemes = memes.slice(40, 60); // 41-60 for Classic
     } else if (category === "Random") {

@@ -49,8 +49,8 @@ export default function Page() {
       // Create meme object
       const memeData = {
         id: Date.now().toString(), // Unique ID
-        imageUrl,
-        caption,
+        url: imageUrl,
+        name: caption,
         email: user?.email || "anonymous", // Store user email
         category: "new",
         date: new Date().toISOString(), // Timestamp for sorting
