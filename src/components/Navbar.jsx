@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
+import { authContext } from "@/providers/AuthProvider";
 
 export default function Navbar() {
   const router = useRouter();
+  const { user } = useContext(authContext);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [theme, setTheme] = useState("light"); // Default to light
@@ -23,10 +25,9 @@ export default function Navbar() {
   // Fetch the theme from localStorage only on the client side
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedTheme = localStorage.getItem("storeDarkLight");
-      if (storedTheme) {
-        setTheme(storedTheme);
-      }
+      const storedTheme = localStorage.getItem("storeDarkLight") || "light";
+      setTheme(storedTheme);
+      document.documentElement.setAttribute("data-theme", storedTheme); // Apply the theme
     }
   }, []);
 
@@ -105,56 +106,53 @@ export default function Navbar() {
           </ul>
         </div>
         <div className="navbar-end">
-          {/* {user ? (
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-              <div
-                className="relative flex items-center"
-                onMouseEnter={() => setIsHovered(true)}
-              >
-                <img
-                  src={user.photoURL}
-                  alt="User Profile"
-                  className="w-12 h-12 rounded-full object-cover cursor-pointer"
-                />
-              </div>
-
-              {isHovered && (
-                <div
-                  className="absolute top-14 text-center right-0 bg-white border shadow-lg w-60 p-4 rounded-md !z-50"
-                  onClick={(e) => e.stopPropagation()} // Prevent click event from propagating
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
+          {user ? (
+            <>
+              <div className="dropdown dropdown-end mr-2">
+                <div className="flex">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn btn-ghost btn-circle avatar flex"
+                  >
+                    <div className="w-10 rounded-full">
+                      <img
+                        data-tooltip-id="my-tooltip"
+                        // data-tooltip-content={user?.displayName}
+                        alt="User"
+                        src={user?.photoURL}
+                      />
+                      {/* <Tooltip id="my-tooltip" /> */}
+                    </div>
+                  </div>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content bg-primary rounded-box z-[1] mt-3 w-52 p-2 gap-3"
                 >
-                  <p className="font-bold mb-2 text-black">
-                    {user.displayName || "Anonymous"}
-                  </p>
-
                   <Link
-                    onClick={handleSignOut}
-                    to="/login"
+                    className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                    href="/dashboard"
+                  >
+                    <li>Dashboard</li>
+                  </Link>
+                  <Link
+                    // onClick={handleSignOut}
                     className="btn bg-gradient-to-r from-primary to-secondary text-white"
                   >
-                    Log Out
+                    Logout
                   </Link>
-                </div>
-              )}
-            </div>
+                </ul>
+              </div>
+            </>
           ) : (
-            <div className="space-x-1">
-              <Link
-                to="/login"
-                className="btn bg-gradient-to-r from-primary to-secondary text-white"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="btn bg-gradient-to-r from-primary to-secondary text-white"
-              >
-                Register
-              </Link>
-            </div>
-          )} */}
+            <Link
+              className="btn bg-gradient-to-r from-primary to-secondary text-white"
+              href="/login"
+            >
+              Login
+            </Link>
+          )}
           <label className="swap swap-rotate ml-2">
             {/* this hidden checkbox controls the state */}
             <input
