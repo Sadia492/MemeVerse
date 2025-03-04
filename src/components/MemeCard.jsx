@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useState } from "react";
 import { FaComment, FaDownload } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
@@ -31,6 +32,13 @@ export default function MemeCard({ meme }) {
 
   // Handle liking the meme
   const handleLike = () => {
+    if (!user) {
+      toast.error("You need to be logged in to like a meme.");
+      return;
+    }
+
+    const userEmail = user.email; // Get user email to store likes by user
+
     const newLikes = isLiked ? likes - 1 : likes + 1; // Increment or decrement likes
     setLikes(newLikes); // Update likes state
 
@@ -39,6 +47,22 @@ export default function MemeCard({ meme }) {
 
     // Store the updated likes count and like status in localStorage
     localStorage.setItem(`likes-${meme.id}`, newLikes);
+    localStorage.setItem(`isLiked-${meme.id}`, newIsLiked);
+
+    // Store user email who liked the meme in localStorage to track likes per user
+    let usersWhoLiked =
+      JSON.parse(localStorage.getItem(`usersLiked-${meme.id}`)) || [];
+
+    if (newIsLiked) {
+      usersWhoLiked.push(userEmail); // Add email to the list if liked
+    } else {
+      usersWhoLiked = usersWhoLiked.filter((email) => email !== userEmail); // Remove email from the list if unliked
+    }
+
+    localStorage.setItem(
+      `usersLiked-${meme.id}`,
+      JSON.stringify(usersWhoLiked)
+    );
   };
 
   // Function to handle copying the meme link to the clipboard
