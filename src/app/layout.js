@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { MemeProvider } from "@/providers/MemeProvider";
 import AuthProvider from "@/providers/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
           <MemeProvider>
             <Navbar></Navbar>
             <div>{children}</div>
+            <Toaster />
           </MemeProvider>
         </AuthProvider>
       </body>
