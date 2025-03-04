@@ -1,12 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
+import { authContext } from "@/providers/AuthProvider";
+import toast from "react-hot-toast";
 
-export default function page() {
+export default function Page() {
+  const { user } = useContext(authContext); // Get user info from context
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
-  const [generatedCaption, setGeneratedCaption] = useState("");
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
   // Handle file upload
@@ -14,7 +16,7 @@ export default function page() {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setPreviewImageUrl(URL.createObjectURL(file)); // Preview image before upload
+      setPreviewImageUrl(URL.createObjectURL(file)); // Preview before upload
     }
   };
 
@@ -23,92 +25,50 @@ export default function page() {
     setCaption(e.target.value);
   };
 
-  // Handle AI-based meme caption generation (Simulated function)
-  const generateAICaption = async () => {
-    setLoading(true);
-    try {
-      // Prepare the data to be sent as URL-encoded parameters
-      const formData = new URLSearchParams({
-        template_id: "61579", // Meme template ID
-        text0: "Generated caption from AI!", // Caption text
-        text1: caption, // The second text field (your caption)
-        username: "your_username", // Replace with your Imgflip username
-        password: "your_password", // Replace with your Imgflip password
-      });
-
-      // Make the POST request with form data
-      const response = await fetch("https://api.imgflip.com/caption_image", {
-        method: "POST",
-        body: formData, // URL-encoded body
-      });
-
-      const result = await response.json();
-
-      console.log(result); // Log the response for debugging
-
-      // Check if the response contains the expected data
-      if (result && result.data) {
-        setGeneratedCaption(result.data.text0 || "No caption generated");
-      } else {
-        console.error("Error in API response:", result);
-        setGeneratedCaption("Error generating caption");
-      }
-    } catch (error) {
-      console.error("Error generating caption:", error);
-      setGeneratedCaption("Error generating caption");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Upload image to ImgBB
-  const uploadImageToImgBB = async (imageFile) => {
-    const formData = new FormData();
-    formData.append("image", imageFile);
-
-    try {
-      const response = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_Image_Hosting_Key}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data.data.url; // Get the URL of the uploaded image
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      return null;
-    }
-  };
-
-  // Handle the image upload and submit the meme
+  // Upload image to ImgBB and store meme data in localStorage
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!image) {
-      alert("Please upload an image first!");
+    if (!image || !caption.trim()) {
+      toast.error("Please upload an image and add a caption!");
       return;
     }
 
-    // Set loading state while the image is being uploaded
     setLoading(true);
 
     try {
-      // Upload image to ImgBB
-      const uploadedImageUrl = await uploadImageToImgBB(image);
-      if (uploadedImageUrl) {
-        console.log("Image uploaded to ImgBB:", uploadedImageUrl);
+      const formData = new FormData();
+      formData.append("image", image);
+      const response = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_Image_Hosting_Key}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-        // Save meme with caption and image URL (use local storage or a backend service)
-        console.log("Meme uploaded with caption:", caption);
-        setLoading(false);
-      } else {
-        setLoading(false);
-        alert("Failed to upload the image.");
-      }
+      const imageUrl = response.data.data.url;
+
+      // Create meme object
+      const memeData = {
+        id: Date.now().toString(), // Unique ID
+        imageUrl,
+        caption,
+        email: user?.email || "anonymous", // Store user email
+        category: "new",
+        date: new Date().toISOString(), // Timestamp for sorting
+      };
+
+      // Retrieve existing memes from localStorage
+      const storedMemes = JSON.parse(localStorage.getItem("memes")) || [];
+      const updatedMemes = [memeData, ...storedMemes]; // Add new meme
+      localStorage.setItem("memes", JSON.stringify(updatedMemes));
+
+      toast.success("Meme uploaded successfully!");
+      setImage(null);
+      setCaption("");
+      setPreviewImageUrl(null);
     } catch (error) {
-      console.error("Error uploading meme:", error);
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image.");
+    } finally {
       setLoading(false);
     }
   };
@@ -146,24 +106,6 @@ export default function page() {
           ></textarea>
         </div>
 
-        <div className="flex gap-4 mb-4">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={generateAICaption}
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Generate AI Caption"}
-          </button>
-        </div>
-
-        {generatedCaption && (
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold">Generated AI Caption:</h3>
-            <p>{generatedCaption}</p>
-          </div>
-        )}
-
         <div className="mb-4">
           {previewImageUrl && (
             <div className="flex flex-col items-center">
@@ -173,13 +115,17 @@ export default function page() {
                 className="w-64 h-auto mb-4"
               />
               <h2 className="text-lg font-semibold">Preview Caption:</h2>
-              <p>{generatedCaption || caption}</p>
+              <p>{caption}</p>
             </div>
           )}
         </div>
 
         <div className="mb-4">
-          <button type="submit" className="btn btn-primary w-full">
+          <button
+            type="submit"
+            className="btn btn-primary w-full"
+            disabled={loading}
+          >
             {loading ? "Uploading..." : "Upload Meme"}
           </button>
         </div>
