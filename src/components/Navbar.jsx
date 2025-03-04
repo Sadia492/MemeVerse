@@ -60,8 +60,8 @@ export default function Navbar() {
         <li>Meme Upload</li>
       </Link>
 
-      <Link href="/profile">
-        <li>Profile</li>
+      <Link href="/leaderboard">
+        <li>Leaderboard</li>
       </Link>
     </>
   );
@@ -139,9 +139,9 @@ export default function Navbar() {
                 >
                   <Link
                     className="btn bg-gradient-to-r from-primary to-secondary text-white"
-                    href="/dashboard"
+                    href="/profile"
                   >
-                    <li>Dashboard</li>
+                    <li>Profile</li>
                   </Link>
                   <button
                     onClick={handleSignOut}

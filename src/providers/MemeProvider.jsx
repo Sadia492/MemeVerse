@@ -33,7 +33,9 @@ export const MemeProvider = ({ children }) => {
     } else if (category === "Classic") {
       categorizedMemes = memes.slice(40, 60); // 41-60 for Classic
     } else if (category === "Random") {
-      categorizedMemes = memes.sort(() => Math.random() - 0.5); // Shuffle for random memes
+      categorizedMemes = [...memes]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 100); // Shuffle for random memes
     }
 
     setFilteredMemes(categorizedMemes);
