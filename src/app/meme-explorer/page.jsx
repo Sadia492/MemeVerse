@@ -46,58 +46,64 @@ export default function Page() {
     setSearchedMemes(memesWithStats);
   }, [searchQuery, filteredMemes, sortBy]);
 
+  const categories = ["Trending", "New", "Classic", "Random"];
+
   return (
     <div className="mt-24">
       <div className="drawer lg:drawer-open">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
           {/* Page content here */}
-          {/* 🔹 Search & Sort Bar */}
-          <div className="mb-4 flex gap-4">
-            <input
-              type="text"
-              placeholder="Search memes..."
-              className="input input-bordered w-full max-w-lg p-2"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="w-11/12 mx-auto">
+            {/* 🔹 Search & Sort Bar */}
+            <div className="mb-4 mt-6 flex gap-4">
+              <input
+                type="text"
+                placeholder="Search memes..."
+                className="input input-bordered border-4 border-myYellow w-full max-w-lg p-2"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
 
-            <select
-              className="select select-bordered"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="">Sort By</option>
-              <option value="likes">Most Liked</option>
-              <option value="comments">Most Commented</option>
-            </select>
-          </div>
-
-          <div>
-            <div>
-              <button onClick={() => setCategory("Trending")} className="btn">
-                Trending
-              </button>
-              <button onClick={() => setCategory("New")} className="btn">
-                New
-              </button>
-              <button onClick={() => setCategory("Classic")} className="btn">
-                Classic
-              </button>
-              <button onClick={() => setCategory("Random")} className="btn">
-                Random
-              </button>
+              <select
+                className="select select-bordered w-full border-4 border-myYellow"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="">Sort By</option>
+                <option value="likes">Most Liked</option>
+                <option value="comments">Most Commented</option>
+              </select>
             </div>
 
-            {/* 🔹 Meme Grid */}
-            <div className="grid grid-cols-2 gap-6">
-              {searchedMemes.length > 0 ? (
-                searchedMemes.map((meme) => (
-                  <MemeCard key={meme.id} meme={meme} />
-                ))
-              ) : (
-                <p className="text-center text-gray-500">No memes found...</p>
-              )}
+            <div>
+              {/* 🔹 Category Buttons (Main Content) */}
+              <div className="flex justify-center items-center gap-6 mb-8">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={`btn  ${
+                      category === cat
+                        ? "bg-gradient-to-r from-myYellow to-myGreen text-white"
+                        : "border-4 border-myYellow"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* 🔹 Meme Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                {searchedMemes.length > 0 ? (
+                  searchedMemes.map((meme) => (
+                    <MemeCard key={meme.id} meme={meme} />
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">No memes found...</p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -108,26 +114,29 @@ export default function Page() {
             Open drawer
           </label>
         </div>
+
+        {/* 🔹 Sidebar Menu */}
         <div className="drawer-side fixed top-20">
           <label
             htmlFor="my-drawer-2"
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-            {/* Sidebar content here */}
-            <li>
-              <button onClick={() => setCategory("Trending")}>Trending</button>
-            </li>
-            <li>
-              <button onClick={() => setCategory("New")}>New</button>
-            </li>
-            <li>
-              <button onClick={() => setCategory("Classic")}>Classic</button>
-            </li>
-            <li>
-              <button onClick={() => setCategory("Random")}>Random</button>
-            </li>
+          <ul className="menu bg-base-200 text-base-content space-y-3 min-h-full w-80 p-4">
+            {categories.map((cat) => (
+              <li key={cat}>
+                <button
+                  onClick={() => setCategory(cat)}
+                  className={`w-full p-2 rounded-full font-bold ${
+                    category === cat
+                      ? "bg-gradient-to-r from-myYellow to-myGreen text-white"
+                      : "border-4 border-myYellow"
+                  }`}
+                >
+                  {cat}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

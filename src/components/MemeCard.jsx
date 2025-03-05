@@ -111,7 +111,7 @@ export default function MemeCard({ meme }) {
       </h2>
       <figure className=" w-full lg:h-[600px] mx-auto flex justify-center items-center">
         <motion.img
-          className="rounded-xl w-full h-full object-cover border-4"
+          className="rounded-xl w-full h-full  border-4"
           animate={{
             borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
           }}
