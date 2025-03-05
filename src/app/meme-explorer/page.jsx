@@ -95,7 +95,7 @@ export default function Page() {
               </div>
 
               {/* 🔹 Meme Grid */}
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {searchedMemes.length > 0 ? (
                   searchedMemes.map((meme) => (
                     <MemeCard key={meme.id} meme={meme} />

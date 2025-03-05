@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import loginImg from "@/assets/Login-bro.png";
+import Image from "next/image";
 
 export default function page() {
   const [show, setShow] = useState(false);
@@ -29,33 +31,35 @@ export default function page() {
     form.reset();
   };
   return (
-    <div className="flex flex-col-reverse lg:flex-row justify-center items-center h-screen w-11/12 mx-auto">
+    <div className="flex flex-col-reverse gap-6 lg:flex-row justify-center items-center h-screen w-11/12 mx-auto">
       <div className="card flex-1 w-full p-4  shadow-2xl">
         <form onSubmit={handleLogin} className="card-body">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary from-0 to-75% to-secondary text-transparent bg-clip-text text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-myGreen from-0 to-70% to-myYellow text-transparent bg-clip-text text-center">
             LOGIN HERE
           </h2>
 
           <div className="form-control">
             <label className="label">
-              <div className="label-text text-error font-semibold">Email</div>
+              <div className="label-text text-myYellow font-semibold">
+                Email
+              </div>
             </label>
             <br />
             <input
               type="email"
               name="email"
               placeholder="email"
-              className="input input-bordered input-error "
+              className="input input-bordered border-myYellow w-full "
               required
             />
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-error font-semibold">
+              <span className="label-text text-myYellow font-semibold">
                 Password
               </span>
             </label>
-            <label className="input input-bordered input-error  flex  justify-between items-center gap-2">
+            <label className="input input-bordered border-myYellow w-full  flex  justify-between items-center gap-2">
               <input
                 type={show ? "text" : "password"}
                 name="password"
@@ -76,7 +80,7 @@ export default function page() {
           </div>
 
           <div className="form-control mt-6">
-            <button className="btn bg-gradient-to-r from-primary to-secondary text-white">
+            <button className="btn bg-gradient-to-r from-myGreen to-myYellow w-full text-white">
               Login
             </button>
           </div>
@@ -88,13 +92,9 @@ export default function page() {
           </p>
         </form>
       </div>
-      {/* <div className="flex-1 flex justify-center items-center">
-        <Lottie
-          className="lg:w-4/5 "
-          animationData={loginAnimation}
-          loop={true}
-        />
-      </div> */}
+      <div className="flex-1 flex justify-center items-center">
+        <Image src={loginImg} alt={"img"}></Image>
+      </div>
     </div>
   );
 }

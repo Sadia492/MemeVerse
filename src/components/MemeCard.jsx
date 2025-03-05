@@ -155,7 +155,7 @@ export default function MemeCard({ meme }) {
                 whileHover={{ scale: 1.1 }} // Scale up the button on hover
                 whileTap={{ scale: 0.95 }} // Slight scale down on click
                 transition={{ duration: 0.2 }} // Smooth transition for scale effect
-                className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+                className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
               >
                 <FaComment />
               </motion.button>
@@ -169,7 +169,7 @@ export default function MemeCard({ meme }) {
           <div className="card-actions my-4">
             <motion.button
               onClick={handleShare}
-              className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
               whileHover={{ scale: 1.1 }} // Scale up the button on hover
               whileTap={{ scale: 0.95 }} // Slight scale down on click
               transition={{ duration: 0.2 }} // Smooth transition for scale effect
@@ -177,7 +177,7 @@ export default function MemeCard({ meme }) {
               <FaShareNodes />
             </motion.button>
             <motion.button
-              className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
               whileHover={{ scale: 1.1 }} // Scale up the button on hover
               whileTap={{ scale: 0.95 }} // Slight scale down on click
               transition={{ duration: 0.2 }} // Smooth transition for scale effect
@@ -187,7 +187,7 @@ export default function MemeCard({ meme }) {
             </motion.button>
             <Link href={`/meme/${meme?.id}`}>
               <motion.button
-                className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+                className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
                 whileHover={{ scale: 1.1 }} // Scale up the button on hover
                 whileTap={{ scale: 0.95 }} // Slight scale down on click
                 transition={{ duration: 0.2 }} // Smooth transition for scale effect

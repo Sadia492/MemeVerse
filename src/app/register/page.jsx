@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import registerImg from "@/assets/Sign_up-bro.png";
+import Image from "next/image";
 
 const image_hosting_key = process.env.NEXT_PUBLIC_Image_Hosting_Key;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -69,6 +71,7 @@ export default function page() {
                   email: result?.user?.email,
                   photoURL: image,
                   engagement: 0, // Add engagement score or any other properties you need
+                  bio: "",
                 };
 
                 // Store user in localStorage under "users" array
@@ -105,9 +108,9 @@ export default function page() {
   };
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row justify-center items-center min-h-screen w-11/12 mx-auto">
+    <div className="flex flex-col-reverse lg:flex-row gap-6 mt-24 justify-center items-center min-h-screen w-11/12 mx-auto">
       <div className="card bg-base-100 w-full flex-1 shadow-2xl">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary from-0 to-70% to-secondary text-transparent bg-clip-text text-center">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-myGreen from-0 to-70% to-myYellow text-transparent bg-clip-text text-center">
           REGISTER NOW
         </h2>
         <form
@@ -117,35 +120,39 @@ export default function page() {
           {/* name field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-error font-semibold">Name</span>
+              <span className="label-text text-myYellow font-semibold">
+                Name
+              </span>
             </label>
             <br />
             <input
               type="text"
               placeholder="name"
               name="name"
-              className="input input-bordered input-error"
+              className="input input-bordered border-myYellow"
               required
             />
           </div>
           {/* email field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-error font-semibold">Email</span>
+              <span className="label-text text-myYellow font-semibold">
+                Email
+              </span>
             </label>
             <br />
             <input
               type="email"
               name="email"
               placeholder="email"
-              className="input input-bordered input-error"
+              className="input input-bordered border-myYellow"
               required
             />
           </div>
           {/* image field */}
           <div className="form-control col-span-2">
             <label className="label">
-              <span className="label-text text-error font-semibold">
+              <span className="label-text text-myYellow font-semibold">
                 Avatar
               </span>
             </label>
@@ -153,7 +160,7 @@ export default function page() {
             <input
               type="file"
               name="avatar"
-              className="file-input file-input-bordered input-error pr-0 file-input-error w-full"
+              className="file-input file-input-bordered border-myYellow pr-0 file-input-accent w-full"
               accept="image/*"
               required
             />
@@ -162,12 +169,12 @@ export default function page() {
           {/* password field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-error font-semibold">
+              <span className="label-text text-myYellow font-semibold">
                 Password
               </span>
             </label>
             <br />
-            <label className="input input-bordered input-error flex  justify-between items-center gap-2">
+            <label className="input input-bordered border-myYellow flex  justify-between items-center gap-2">
               <input
                 type={show ? "text" : "password"}
                 name="password"
@@ -183,12 +190,12 @@ export default function page() {
           {/* confirm password field */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-error font-semibold">
+              <span className="label-text text-myYellow font-semibold">
                 Confirm Password
               </span>
             </label>
             <br />
-            <label className="input input-bordered input-error flex  justify-between items-center gap-2">
+            <label className="input input-bordered border-myYellow flex  justify-between items-center gap-2">
               <input
                 type={confirmShow ? "text" : "password"}
                 name="confirmPassword"
@@ -205,8 +212,8 @@ export default function page() {
               </button>
             </label>
           </div>
-          <div className="form-control mt-6 md:col-span-2">
-            <button className="btn bg-gradient-to-r from-primary to-secondary text-white">
+          <div className="form-control mt-6 w-full md:col-span-2">
+            <button className="btn bg-gradient-to-r from-myGreen to-myYellow text-white w-full">
               Register
             </button>
           </div>
@@ -221,7 +228,9 @@ export default function page() {
           </p>
         </form>
       </div>
-      <div className="flex-1 flex justify-center items-center"></div>
+      <div className="flex-1 flex justify-center items-center">
+        <Image src={registerImg} alt={"img"}></Image>
+      </div>
     </div>
   );
 }

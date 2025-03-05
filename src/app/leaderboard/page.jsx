@@ -39,12 +39,14 @@ export default function Leaderboard() {
   }, [memes]); // Depend on memes to update correctly
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Leaderboard</h1>
+    <div className="w-11/12 mx-auto mt-24">
+      <h1 className="text-3xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
+        Leaderboard
+      </h1>
 
       {/* Top 10 Most Liked Memes */}
       <div className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="text-lg text-left font-bold">
           🔥 Top 10 Most Liked Memes
         </h2>
         {/* Ensure scrollbar is always visible */}
@@ -54,13 +56,7 @@ export default function Leaderboard() {
         >
           <table className="table text-center border-separate border-spacing-y-3 w-full">
             {/* head */}
-            <thead
-              style={{
-                // backgroundImage: `url(${bgImg})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
+            <thead className="bg-gradient-to-r from-myGreen to-myYellow">
               <tr className=" rounded-lg">
                 <th className="py-3 px-6">#</th>
                 <th className="py-3 px-6">Meme</th>
@@ -73,24 +69,22 @@ export default function Leaderboard() {
                 topMemes.map((meme, idx) => (
                   <tr
                     key={meme.id}
-                    className="bg-white shadow-lg rounded-lg hover:scale-105 transform transition duration-300 ease-in-out"
+                    className="shadow-lg rounded-lg hover:scale-105 transform transition duration-300 ease-in-out"
                   >
                     <th className="py-3 px-6 text-primary">{idx + 1}</th>
-                    <td className="py-3 px-6 text-gray-700 font-medium">
+                    <td className="py-3 px-6  font-medium">
                       <img
                         src={meme?.url}
                         alt={meme?.name}
                         className="w-10 h-10"
                       />
                     </td>
-                    <td className="py-3 px-6 text-gray-700 font-medium">
-                      {meme.name}
-                    </td>
+                    <td className="py-3 px-6  font-medium">{meme.name}</td>
                     <td className="py-3 px-6">
                       <span
                         className={`px-3 py-1 font-medium rounded-full ${
-                          meme.likes > 2
-                            ? "bg-yellow-100 text-yellow-600"
+                          meme.likes > 5
+                            ? "bg-myYellow/40 text-yellow-600"
                             : "bg-green-100 text-green-600"
                         } `}
                       >
@@ -113,7 +107,7 @@ export default function Leaderboard() {
 
       {/* User Rankings by Engagement */}
       <div>
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="text-xl font-bold mb-4">
           🏆 User Rankings by Engagement
         </h2>
         {/* Ensure scrollbar is always visible */}
@@ -123,12 +117,7 @@ export default function Leaderboard() {
         >
           <table className="table text-center border-separate border-spacing-y-3 w-full">
             {/* head */}
-            <thead
-              style={{
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
+            <thead className="bg-gradient-to-r from-myGreen to-myYellow">
               <tr className="rounded-lg">
                 <th className="py-3 px-6">#</th>
                 <th className="py-3 px-6">User Image</th>
@@ -141,17 +130,17 @@ export default function Leaderboard() {
                 topUsers.map((user, idx) => (
                   <tr
                     key={user.email}
-                    className="bg-white shadow-lg rounded-lg hover:scale-105 transform transition duration-300 ease-in-out"
+                    className="shadow-lg rounded-lg hover:scale-105 transform transition duration-300 ease-in-out"
                   >
                     <th className="py-3 px-6 text-primary">{idx + 1}</th>
-                    <td className="py-3 px-6 text-gray-700 flex justify-center items-center">
+                    <td className="py-3 px-6  flex justify-center items-center">
                       <img
                         src={user?.photoURL}
                         alt={user?.displayName}
                         className="w-15 h-15 rounded-full"
                       />
                     </td>
-                    <td className="py-3 px-6 text-gray-700 font-medium">
+                    <td className="py-3 px-6  font-medium">
                       {user?.displayName}
                     </td>
                     <td className="py-3 px-6">

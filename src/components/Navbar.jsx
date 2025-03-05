@@ -102,7 +102,7 @@ export default function Navbar() {
               {links}
             </ul>
           </div>
-          <a className="text-3xl flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myYellow text-transparent bg-clip-text">
+          <a className="text-3xl flex items-center justify-center drop-shadow-2xl font-bold bg-gradient-to-r from-myYellow to-myYellow text-transparent bg-clip-text">
             <Image src={logo} alt="logo" className="w-20 h-20"></Image>
             MemeVerse
           </a>
@@ -123,29 +123,23 @@ export default function Navbar() {
                     className="btn btn-ghost btn-circle avatar flex"
                   >
                     <div className="w-10 rounded-full">
-                      <img
-                        data-tooltip-id="my-tooltip"
-                        // data-tooltip-content={user?.displayName}
-                        alt="User"
-                        src={user?.photoURL}
-                      />
-                      {/* <Tooltip id="my-tooltip" /> */}
+                      <img alt="User" src={user?.photoURL} />
                     </div>
                   </div>
                 </div>
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-primary rounded-box z-[1] mt-3 w-52 p-2 gap-3"
+                  className="menu menu-sm dropdown-content bg-myGreen rounded-box z-[1] mt-3 w-52 p-2 gap-3"
                 >
                   <Link
-                    className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                    className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
                     href="/profile"
                   >
                     <li>Profile</li>
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                    className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
                   >
                     Logout
                   </button>
@@ -154,7 +148,7 @@ export default function Navbar() {
             </>
           ) : (
             <Link
-              className="btn bg-gradient-to-r from-primary to-secondary text-white"
+              className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
               href="/login"
             >
               Login

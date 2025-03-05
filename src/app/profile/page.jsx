@@ -5,6 +5,8 @@ import axios from "axios";
 import { authContext } from "@/providers/AuthProvider";
 import { MemeContext } from "@/providers/MemeProvider";
 import MemeCard from "@/components/MemeCard";
+import PrivateRoute from "@/components/PrivateRoute";
+import { motion } from "framer-motion";
 
 const image_hosting_key = process.env.NEXT_PUBLIC_Image_Hosting_Key;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -31,6 +33,15 @@ export default function Profile() {
     SetUserMemes(userMemes);
   }, [user?.email, memes]);
 
+  // Initialize bio from localStorage
+  useEffect(() => {
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const currentUser = storedUsers.find((u) => u.email === user?.email);
+    if (currentUser) {
+      setBio(currentUser.bio || ""); // Set the bio from localStorage or default to an empty string
+    }
+  }, [user?.email]); // Run when the user's email changes
+
   const handleEdit = () => {
     setEditMode(true);
     setBio(user?.bio || ""); // Pre-fill bio if it exists
@@ -41,10 +52,10 @@ export default function Profile() {
     const form = e.target;
     const name = form.name.value;
     const avatar = form.avatar.files[0];
-    const bio = form.bio.value; // Getting bio from form
+    const bio = form.bio.value;
 
     try {
-      let imageURL = user?.photoURL; // Default to current image URL
+      let imageURL = user?.photoURL;
 
       if (avatar) {
         const formData = new FormData();
@@ -57,7 +68,7 @@ export default function Profile() {
         });
 
         if (res.data.success) {
-          imageURL = res.data.data.url; // Get the new image URL
+          imageURL = res.data.data.url;
         } else {
           throw new Error("Image upload failed");
         }
@@ -65,148 +76,174 @@ export default function Profile() {
 
       const updatedUserData = {
         displayName: name,
-        photoURL: imageURL, // Use the new image URL if uploaded
-        bio: bio, // Include bio in the update
+        photoURL: imageURL,
+        bio: bio,
       };
 
-      // Update user profile in Firebase
       await updateUser(updatedUserData);
 
-      // Display success toast
-      toast.success("Profile updated successfully!");
+      // Update localStorage users array
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const updatedUsers = users.map((u) =>
+        u.email === user.email ? { ...u, ...updatedUserData } : u
+      );
 
-      form.reset(); // Reset form fields only after successful submission
+      localStorage.setItem("users", JSON.stringify(updatedUsers));
+      setBio(bio); // Update bio state
+      toast.success("Profile updated successfully!");
+      form.reset();
     } catch (error) {
-      toast.error(error.message); // Display error toast if any error occurs
+      toast.error(error.message);
     } finally {
       setLoading(false);
-      setEditMode(false); // Exit edit mode after saving
+      setEditMode(false);
     }
   };
 
   return (
-    <div className="mt-24">
-      <div className="flex justify-center items-center">
-        <div className="shadow-2xl rounded-2xl md:w-4/5 lg:w-3/5">
-          <div className="flex flex-col items-center justify-center p-8">
-            <img
-              alt="profile"
-              src={user?.photoURL}
-              className="mx-auto object-cover rounded-full h-24 w-24 border-2 border-white"
-            />
-            <p>{user?.bio}</p>
-
-            {!editMode && (
-              <div className="mt-4 w-full flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleEdit}
-                  className="btn bg-gradient-to-r text-white from-primary to-secondary"
-                >
-                  Edit
-                </button>
-              </div>
-            )}
-
-            <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 md:grid-cols-2 w-full gap-6"
+    <PrivateRoute>
+      <div className="mt-24 w-11/12 mx-auto">
+        <div className="flex justify-center items-center">
+          <div className="shadow-2xl rounded-2xl w-full">
+            <h2 className="text-3xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
+              My Profile
+            </h2>
+            <motion.div
+              animate={{
+                borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
+              }}
+              transition={{
+                duration: 3, // Duration of the animation
+                repeat: Infinity, // Make the animation repeat forever
+                repeatType: "loop", // The animation will loop
+              }}
+              className="flex flex-col items-center justify-center p-8 border-4"
             >
-              {/* Avatar */}
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Avatar</span>
-                </label>
-                <br />
-                <input
-                  type="file"
-                  name="avatar"
-                  className="file-input file-input-bordered file-input-error w-full"
-                  accept="image/*"
-                  disabled={!editMode}
-                />
-              </div>
+              <img
+                alt="profile"
+                src={user?.photoURL}
+                className="mx-auto object-cover rounded-full h-24 w-24 border-2 border-white"
+              />
+              <p>{bio}</p>
 
-              {/* Name */}
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Name</span>
-                </label>
-                <br />
-                <input
-                  type="text"
-                  name="name"
-                  defaultValue={user?.displayName}
-                  className="input input-bordered w-full"
-                  disabled={!editMode}
-                />
-              </div>
-
-              {/* Bio */}
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Bio</span>
-                </label>
-                <br />
-                <textarea
-                  name="bio"
-                  value={bio} // Ensure the state value is reflected
-                  onChange={(e) => setBio(e.target.value)} // Manage bio field input
-                  className="input input-bordered w-full"
-                  disabled={!editMode}
-                  rows="4"
-                />
-              </div>
-
-              {/* Email */}
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <br />
-                <input
-                  type="email"
-                  name="email"
-                  defaultValue={user?.email}
-                  className="input input-bordered w-full"
-                  disabled // Email is always disabled
-                />
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-center md:col-span-2 gap-4">
-                {editMode && (
+              {!editMode && (
+                <div className="mt-4 w-full flex justify-end">
                   <button
-                    type="submit"
-                    className="btn bg-gradient-to-r text-white from-primary to-secondary"
+                    type="button"
+                    onClick={handleEdit}
+                    className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
                   >
-                    Save
+                    Edit
                   </button>
-                )}
-              </div>
-            </form>
+                </div>
+              )}
+
+              <form
+                onSubmit={handleSubmit}
+                className="grid grid-cols-1 md:grid-cols-2 w-full gap-6"
+              >
+                {/* Avatar */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Avatar</span>
+                  </label>
+                  <br />
+                  <input
+                    type="file"
+                    name="avatar"
+                    className="file-input file-input-bordered file-input-accent w-full"
+                    accept="image/*"
+                    disabled={!editMode}
+                  />
+                </div>
+
+                {/* Name */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Name</span>
+                  </label>
+                  <br />
+                  <input
+                    type="text"
+                    name="name"
+                    defaultValue={user?.displayName}
+                    className="input input-bordered w-full"
+                    disabled={!editMode}
+                  />
+                </div>
+
+                {/* Bio */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Bio</span>
+                  </label>
+                  <br />
+                  <textarea
+                    name="bio"
+                    value={bio} // Ensure the state value is reflected
+                    onChange={(e) => setBio(e.target.value)} // Manage bio field input
+                    className="input input-bordered w-full"
+                    disabled={!editMode}
+                    rows="4"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <br />
+                  <input
+                    type="email"
+                    name="email"
+                    defaultValue={user?.email}
+                    className="input input-bordered w-full"
+                    disabled // Email is always disabled
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-center md:col-span-2 gap-4">
+                  {editMode && (
+                    <button
+                      type="submit"
+                      className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
+                    >
+                      Save
+                    </button>
+                  )}
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        </div>
+        <div className="mt-8">
+          <h2 className="text-xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
+            Your Uploaded memes
+          </h2>
+          <div className="grid grid-cols-2">
+            {userMemes.length > 0 ? (
+              userMemes.map((meme) => <MemeCard key={meme.id} meme={meme} />)
+            ) : (
+              <p className="font-bold text-2xl">No memes uploaded yet.</p>
+            )}
+          </div>
+        </div>
+        {/* Displaying Liked Memes */}
+        <div>
+          <h2 className="text-xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
+            Your Liked Memes
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {likedMemes.length > 0 ? (
+              likedMemes.map((meme) => <MemeCard key={meme.id} meme={meme} />)
+            ) : (
+              <p className="font-bold text-2xl">No memes liked yet.</p>
+            )}
           </div>
         </div>
       </div>
-      <div>
-        <h2>User Uploaded memes</h2>
-        <div className="grid grid-cols-2">
-          {userMemes.map((meme) => (
-            <MemeCard key={meme.id} meme={meme}></MemeCard>
-          ))}
-        </div>
-      </div>
-      {/* Displaying Liked Memes */}
-      <div>
-        <h2>User Liked Memes</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {likedMemes.length > 0 ? (
-            likedMemes.map((meme) => <MemeCard key={meme.id} meme={meme} />)
-          ) : (
-            <p>No memes liked yet.</p>
-          )}
-        </div>
-      </div>
-    </div>
+    </PrivateRoute>
   );
 }
