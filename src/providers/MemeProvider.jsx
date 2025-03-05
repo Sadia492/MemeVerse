@@ -55,6 +55,7 @@ export const MemeProvider = ({ children }) => {
     <MemeContext.Provider
       value={{
         memes,
+        setMemes,
         filteredMemes,
         category,
         setCategory,

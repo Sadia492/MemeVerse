@@ -162,7 +162,7 @@ export default function Leaderboard() {
               ) : (
                 <tr>
                   <td colSpan="6" className="text-2xl font-bold text-primary">
-                    No Assignment Attempted
+                    No User Engaged
                   </td>
                 </tr>
               )}
