@@ -10,24 +10,38 @@ export default function MemeCard({ meme }) {
   const { user } = useContext(authContext);
 
   const [likes, setLikes] = useState(() => {
-    // Get the stored likes count from localStorage on initial load
     const storedLikes = localStorage.getItem(`likes-${meme.id}`);
-    return storedLikes ? parseInt(storedLikes, 10) : 0; // If no likes in localStorage, default to 0
+    return storedLikes ? parseInt(storedLikes, 10) : 0;
   });
+
   const [isLiked, setIsLiked] = useState(() => {
-    // Get the stored like status from localStorage on initial load
     const storedIsLiked = localStorage.getItem(`isLiked-${meme.id}`);
-    return storedIsLiked === "true"; // Convert string "true"/"false" to boolean
+    return storedIsLiked === "true";
   });
-  const [isCommentSectionVisible, setIsCommentSectionVisible] = useState(false); // State for comment section visibility
+
+  const [isCommentSectionVisible, setIsCommentSectionVisible] = useState(false);
 
   // Handle downloading the image
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = meme.url;
     link.target = "_blank";
-    link.download = meme.name || "meme"; // Set default download name as meme
+    link.download = meme.name || "meme";
     link.click();
+  };
+
+  // Function to update user engagement in localStorage
+  const updateUserEngagement = (email, points) => {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const userIndex = users.findIndex((u) => u.email === email);
+
+    if (userIndex !== -1) {
+      users[userIndex].engagement = (users[userIndex].engagement || 0) + points;
+    } else {
+      users.push({ email, engagement: points });
+    }
+
+    localStorage.setItem("users", JSON.stringify(users));
   };
 
   // Handle liking the meme
@@ -37,26 +51,26 @@ export default function MemeCard({ meme }) {
       return;
     }
 
-    const userEmail = user.email; // Get user email to store likes by user
+    const userEmail = user.email;
 
-    const newLikes = isLiked ? likes - 1 : likes + 1; // Increment or decrement likes
-    setLikes(newLikes); // Update likes state
+    const newLikes = isLiked ? likes - 1 : likes + 1;
+    setLikes(newLikes);
 
-    const newIsLiked = !isLiked; // Toggle like state
+    const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
 
-    // Store the updated likes count and like status in localStorage
     localStorage.setItem(`likes-${meme.id}`, newLikes);
     localStorage.setItem(`isLiked-${meme.id}`, newIsLiked);
 
-    // Store user email who liked the meme in localStorage to track likes per user
     let usersWhoLiked =
       JSON.parse(localStorage.getItem(`usersLiked-${meme.id}`)) || [];
 
     if (newIsLiked) {
-      usersWhoLiked.push(userEmail); // Add email to the list if liked
+      usersWhoLiked.push(userEmail);
+      updateUserEngagement(userEmail, 1); // Increase engagement
     } else {
-      usersWhoLiked = usersWhoLiked.filter((email) => email !== userEmail); // Remove email from the list if unliked
+      usersWhoLiked = usersWhoLiked.filter((email) => email !== userEmail);
+      updateUserEngagement(userEmail, -1); // Decrease engagement
     }
 
     localStorage.setItem(
@@ -92,7 +106,7 @@ export default function MemeCard({ meme }) {
               onClick={handleLike}
               className={`btn btn-outline btn-sm mr-2 ${
                 isLiked ? "animate-like" : ""
-              }`} // Animation when liked
+              }`}
             >
               <AiOutlineLike />
             </button>

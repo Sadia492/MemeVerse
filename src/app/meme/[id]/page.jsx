@@ -9,7 +9,7 @@ import { FaComment } from "react-icons/fa";
 
 export default function MemeDetailsPage() {
   const { memes } = useContext(MemeContext);
-  const { id } = useParams(); // ✅ Extracts the ID correctly
+  const { id } = useParams();
   const { user } = useContext(authContext);
 
   const [meme, setMeme] = useState(null);
@@ -19,7 +19,6 @@ export default function MemeDetailsPage() {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
-  // ✅ Load data safely in useEffect (avoids SSR issues)
   useEffect(() => {
     if (!id || !memes) return;
 
@@ -27,42 +26,65 @@ export default function MemeDetailsPage() {
     setMeme(findMeme);
 
     if (typeof window !== "undefined") {
-      const storedIsLiked = localStorage.getItem(`isLiked-${id}`);
-      setIsLiked(storedIsLiked === "true");
-
-      const storedLikes = localStorage.getItem(`likes-${id}`);
-      setLikes(storedLikes ? parseInt(storedLikes, 10) : 0);
-
-      const storedComments = localStorage.getItem(`comments-${id}`);
-      setComments(storedComments ? JSON.parse(storedComments) : []);
+      setIsLiked(localStorage.getItem(`isLiked-${id}`) === "true");
+      setLikes(parseInt(localStorage.getItem(`likes-${id}`), 10) || 0);
+      setComments(JSON.parse(localStorage.getItem(`comments-${id}`)) || []);
     }
   }, [id, memes]);
 
+  // ✅ Increase User Engagement
+  const increaseUserEngagement = () => {
+    if (!user) return;
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const userIndex = users.findIndex((u) => u.email === user.email);
+
+    if (userIndex !== -1) {
+      users[userIndex].engagement = (users[userIndex].engagement || 0) + 1;
+    } else {
+      users.push({
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        engagement: 1,
+      });
+    }
+
+    localStorage.setItem("users", JSON.stringify(users));
+  };
+
   // ✅ Handle Like Toggle
   const handleLike = () => {
+    if (!user) {
+      toast.error("You need to be logged in to like a meme.");
+      return;
+    }
+
+    const userEmail = user.email;
     const newLikes = isLiked ? likes - 1 : likes + 1;
     setLikes(newLikes);
     setIsLiked(!isLiked);
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`likes-${id}`, newLikes);
-      localStorage.setItem(`isLiked-${id}`, (!isLiked).toString());
-    }
-  };
+    localStorage.setItem(`likes-${id}`, newLikes);
+    localStorage.setItem(`isLiked-${id}`, !isLiked);
 
-  // ✅ Handle Meme Sharing
-  const handleShare = () => {
-    const memeUrl = `${window.location.origin}/meme/${id}`;
-    navigator.clipboard
-      .writeText(memeUrl)
-      .then(() => toast.success("Link copied to clipboard!"))
-      .catch(() => toast.error("Failed to copy link"));
+    let usersWhoLiked =
+      JSON.parse(localStorage.getItem(`usersLiked-${id}`)) || [];
+
+    if (!isLiked) {
+      usersWhoLiked.push(userEmail);
+      increaseUserEngagement(); // Increase engagement only when liking
+    } else {
+      usersWhoLiked = usersWhoLiked.filter((email) => email !== userEmail);
+    }
+
+    localStorage.setItem(`usersLiked-${id}`, JSON.stringify(usersWhoLiked));
   };
 
   // ✅ Handle Comment Submission
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    if (!comment.trim()) return;
+    if (!comment.trim() || !user) return;
 
     const newComment = {
       displayName: user?.displayName || "Anonymous",
@@ -74,12 +96,10 @@ export default function MemeDetailsPage() {
     setComments(updatedComments);
     setComment("");
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`comments-${id}`, JSON.stringify(updatedComments));
-    }
+    localStorage.setItem(`comments-${id}`, JSON.stringify(updatedComments));
+    increaseUserEngagement(); // Increase engagement when commenting
   };
 
-  // ✅ Toggle Comment Section
   const toggleCommentSection = () => {
     setIsCommentSectionVisible(!isCommentSectionVisible);
   };
@@ -88,7 +108,7 @@ export default function MemeDetailsPage() {
 
   return (
     <div className="w-11/12 mx-auto flex flex-col md:flex-row p-4 mt-24 gap-6 dark:bg-gray-800 rounded-lg shadow-lg">
-      <Toaster /> {/* Toast Notifications */}
+      <Toaster />
       <img
         src={meme.url}
         alt={meme.name}
@@ -110,7 +130,12 @@ export default function MemeDetailsPage() {
           <span className="text-sm text-gray-600">{likes} Likes</span>
 
           <button
-            onClick={handleShare}
+            onClick={() => {
+              navigator.clipboard
+                .writeText(`${window.location.origin}/meme/${id}`)
+                .then(() => toast.success("Link copied to clipboard!"))
+                .catch(() => toast.error("Failed to copy link"));
+            }}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition"
           >
             🔗 Share

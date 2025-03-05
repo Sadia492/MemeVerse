@@ -9,6 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const image_hosting_key = process.env.NEXT_PUBLIC_Image_Hosting_Key;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+
 export default function page() {
   const [show, setShow] = useState(false);
   const [confirmShow, setConfirmShow] = useState(false);
@@ -38,7 +39,7 @@ export default function page() {
       return setError("Must have a Lowercase letter in the password");
     }
     if (password.length < 6) {
-      return setError("Password length must be at least 6 character");
+      return setError("Password length must be at least 6 characters");
     }
 
     try {
@@ -60,7 +61,32 @@ export default function page() {
         createUser(email, password)
           .then(async (result) => {
             setUser(result.user);
-            updateUser({ displayName: name, photoURL: image }).then(() => {});
+            await updateUser({ displayName: name, photoURL: image }).then(
+              () => {
+                // Create user object
+                const userData = {
+                  displayName: name,
+                  email: result?.user?.email,
+                  photoURL: image,
+                  engagement: 0, // Add engagement score or any other properties you need
+                };
+
+                // Store user in localStorage under "users" array
+                if (typeof window !== "undefined") {
+                  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+                  // Check if user already exists
+                  const existingUser = users.find(
+                    (user) => user.email === email
+                  );
+                  if (!existingUser) {
+                    users.push(userData);
+                    localStorage.setItem("users", JSON.stringify(users));
+                  }
+                }
+              }
+            );
+
             router.push("/");
             toast.success("Registration successful");
           })
@@ -69,10 +95,9 @@ export default function page() {
             console.log(error);
           })
           .finally(() => setLoading(false));
+
         form.reset();
       }
-
-      // Proceed with registration logic (e.g., calling `createUser`)
     } catch (error) {
       console.log(error);
       setError("Failed to upload the avatar. Please try again.");
@@ -196,13 +221,7 @@ export default function page() {
           </p>
         </form>
       </div>
-      <div className="flex-1 flex justify-center items-center">
-        {/* <Lottie
-          className="lg:w-4/5 "
-          animationData={registerAnimation}
-          loop={true}
-        /> */}
-      </div>
+      <div className="flex-1 flex justify-center items-center"></div>
     </div>
   );
 }
