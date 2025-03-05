@@ -1,4 +1,5 @@
 "use client";
+import PrivateRoute from "@/components/PrivateRoute";
 import { authContext } from "@/providers/AuthProvider";
 import { MemeContext } from "@/providers/MemeProvider";
 import { useParams } from "next/navigation";
@@ -107,86 +108,89 @@ export default function MemeDetailsPage() {
   if (!meme) return <p>Loading meme details...</p>;
 
   return (
-    <div className="w-11/12 mx-auto flex flex-col md:flex-row p-4 mt-24 gap-6 dark:bg-gray-800 rounded-lg shadow-lg">
-      <Toaster />
-      <img
-        src={meme.url}
-        alt={meme.name}
-        className="w-full md:w-1/2 border-4 rounded-lg mb-4"
-      />
-      <div>
-        <h1 className="text-2xl font-bold mb-2 text-center">{meme.name}</h1>
+    <PrivateRoute>
+      <div className="w-11/12 mx-auto flex flex-col md:flex-row p-4 mt-24 gap-6 dark:bg-gray-800 rounded-lg shadow-lg">
+        <img
+          src={meme.url}
+          alt={meme.name}
+          className="w-full md:w-1/2 border-4 rounded-lg mb-4"
+        />
+        <div>
+          <h1 className="text-2xl font-bold mb-2 text-center">{meme.name}</h1>
 
-        {/* Like & Share Buttons */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleLike}
-            className={`btn btn-outline btn-sm ${
-              isLiked ? "text-blue-500" : ""
-            }`}
-          >
-            <AiOutlineLike />
-          </button>
-          <span className="text-sm text-gray-600">{likes} Likes</span>
+          {/* Like & Share Buttons */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleLike}
+              className={`btn btn-outline btn-sm ${
+                isLiked ? "text-blue-500" : ""
+              }`}
+            >
+              <AiOutlineLike />
+            </button>
+            <span className="text-sm text-gray-600">{likes} Likes</span>
 
-          <button
-            onClick={() => {
-              navigator.clipboard
-                .writeText(`${window.location.origin}/meme/${id}`)
-                .then(() => toast.success("Link copied to clipboard!"))
-                .catch(() => toast.error("Failed to copy link"));
-            }}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition"
-          >
-            🔗 Share
-          </button>
-        </div>
+            <button
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(`${window.location.origin}/meme/${id}`)
+                  .then(() => toast.success("Link copied to clipboard!"))
+                  .catch(() => toast.error("Failed to copy link"));
+              }}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition"
+            >
+              🔗 Share
+            </button>
+          </div>
 
-        {/* Comment Section */}
-        <div className="mt-4">
-          <button
-            onClick={toggleCommentSection}
-            className="btn btn-secondary w-full"
-          >
-            <FaComment /> {comments.length} Comments
-          </button>
+          {/* Comment Section */}
+          <div className="mt-4">
+            <button
+              onClick={toggleCommentSection}
+              className="btn btn-secondary w-full"
+            >
+              <FaComment /> {comments.length} Comments
+            </button>
 
-          {isCommentSectionVisible && (
-            <div className="comments-section mt-4">
-              <h3 className="text-lg font-semibold">Comments</h3>
+            {isCommentSectionVisible && (
+              <div className="comments-section mt-4">
+                <h3 className="text-lg font-semibold">Comments</h3>
 
-              <div className="comments-list mt-2">
-                {comments.length > 0 ? (
-                  comments.map((comment, index) => (
-                    <div key={index} className="p-2 border-b">
-                      <p className="text-sm font-bold">{comment.displayName}</p>
-                      <p className="text-sm text-gray-600">{comment.text}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-400">No comments yet.</p>
-                )}
+                <div className="comments-list mt-2">
+                  {comments.length > 0 ? (
+                    comments.map((comment, index) => (
+                      <div key={index} className="p-2 border-b">
+                        <p className="text-sm font-bold">
+                          {comment.displayName}
+                        </p>
+                        <p className="text-sm text-gray-600">{comment.text}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-400">No comments yet.</p>
+                  )}
+                </div>
+
+                <form
+                  onSubmit={handleCommentSubmit}
+                  className="comment-form mt-4"
+                >
+                  <input
+                    type="text"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    className="input input-bordered w-full mb-2"
+                  />
+                  <button type="submit" className="btn btn-secondary w-full">
+                    Add Comment
+                  </button>
+                </form>
               </div>
-
-              <form
-                onSubmit={handleCommentSubmit}
-                className="comment-form mt-4"
-              >
-                <input
-                  type="text"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Add a comment..."
-                  className="input input-bordered w-full mb-2"
-                />
-                <button type="submit" className="btn btn-secondary w-full">
-                  Add Comment
-                </button>
-              </form>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </PrivateRoute>
   );
 }
