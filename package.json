@@ -12,6 +12,7 @@
     "@google/generative-ai": "^0.23.0",
     "axios": "^1.8.1",
     "firebase": "^11.4.0",
+    "jodit-react": "^5.2.15",
     "lodash": "^4.17.21",
     "motion": "^12.4.7",
     "next": "15.2.0",
