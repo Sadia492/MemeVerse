@@ -3,11 +3,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MemeContext } from "@/providers/MemeProvider";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Leaderboard() {
   const [topMemes, setTopMemes] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
-  const { memes } = useContext(MemeContext); // Full meme data
+  const { memes, loading } = useContext(MemeContext); // Full meme data
 
   useEffect(() => {
     const likedMemes = [];
@@ -37,6 +38,8 @@ export default function Leaderboard() {
     const sortedUsers = users.sort((a, b) => b.engagement - a.engagement);
     setTopUsers(sortedUsers);
   }, [memes]); // Depend on memes to update correctly
+
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <div className="w-11/12 mx-auto mt-24">

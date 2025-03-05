@@ -8,7 +8,7 @@ export const MemeProvider = ({ children }) => {
   const [memes, setMemes] = useState([]); // All memes (API + LocalStorage)
   const [filteredMemes, setFilteredMemes] = useState([]);
   const [category, setCategory] = useState("Trending");
-  console.log(memes);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   // Retrieve new memes from localStorage
   const getNewMemesFromLocalStorage = () => {
@@ -24,8 +24,10 @@ export const MemeProvider = ({ children }) => {
         const storedMemes = getNewMemesFromLocalStorage(); // LocalStorage memes
 
         setMemes([...apiMemes, ...storedMemes]); // Merge both
+        setLoading(false); // Set loading to false when memes are loaded
       } catch (error) {
         console.error("Error fetching memes:", error);
+        setLoading(false); // Set loading to false even if there's an error
       }
     };
     fetchMemes();
@@ -52,7 +54,13 @@ export const MemeProvider = ({ children }) => {
 
   return (
     <MemeContext.Provider
-      value={{ memes, filteredMemes, category, setCategory }}
+      value={{
+        memes,
+        filteredMemes,
+        category,
+        setCategory,
+        loading, // Pass loading state to children
+      }}
     >
       {children}
     </MemeContext.Provider>

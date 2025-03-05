@@ -1,10 +1,12 @@
 "use client";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import MemeCard from "@/components/MemeCard";
 import { MemeContext } from "@/providers/MemeProvider";
 import React, { useContext, useEffect, useState } from "react";
 
 export default function Page() {
-  const { filteredMemes, category, setCategory } = useContext(MemeContext);
+  const { filteredMemes, category, setCategory, loading } =
+    useContext(MemeContext);
   const [searchQuery, setSearchQuery] = useState(""); // 🔹 Search state
   const [searchedMemes, setSearchedMemes] = useState([]); // 🔹 State for filtered memes
   const [sortBy, setSortBy] = useState(""); // 🔹 Sorting state
@@ -47,6 +49,7 @@ export default function Page() {
   }, [searchQuery, filteredMemes, sortBy]);
 
   const categories = ["Trending", "New", "Classic", "Random"];
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <div className="mt-24">

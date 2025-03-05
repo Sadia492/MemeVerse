@@ -7,6 +7,7 @@ import { MemeContext } from "@/providers/MemeProvider";
 import MemeCard from "@/components/MemeCard";
 import PrivateRoute from "@/components/PrivateRoute";
 import { motion } from "framer-motion";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const image_hosting_key = process.env.NEXT_PUBLIC_Image_Hosting_Key;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -15,7 +16,7 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [bio, setBio] = useState(""); // Manage the bio field
   const { user, setLoading, updateUser, loading } = useContext(authContext);
-  const { memes } = useContext(MemeContext);
+  const { memes, loading: localLoading } = useContext(MemeContext);
   const [userMemes, SetUserMemes] = useState([]);
   const [likedMemes, setLikedMemes] = useState([]);
 
@@ -99,6 +100,7 @@ export default function Profile() {
       setEditMode(false);
     }
   };
+  if (loading || localLoading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <PrivateRoute>
@@ -222,7 +224,7 @@ export default function Profile() {
           <h2 className="text-xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
             Your Uploaded memes
           </h2>
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             {userMemes.length > 0 ? (
               userMemes.map((meme) => <MemeCard key={meme.id} meme={meme} />)
             ) : (
@@ -235,7 +237,7 @@ export default function Profile() {
           <h2 className="text-xl flex items-center justify-center font-bold bg-gradient-to-r mb-6 from-myYellow to-myGreen text-transparent bg-clip-text">
             Your Liked Memes
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {likedMemes.length > 0 ? (
               likedMemes.map((meme) => <MemeCard key={meme.id} meme={meme} />)
             ) : (

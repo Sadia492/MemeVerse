@@ -9,9 +9,10 @@ import { AiOutlineLike } from "react-icons/ai";
 import { FaComment } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { FaShareNodes } from "react-icons/fa6";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function MemeDetailsPage() {
-  const { memes } = useContext(MemeContext);
+  const { memes, loading } = useContext(MemeContext);
   const { id } = useParams();
   const { user } = useContext(authContext);
 
@@ -107,7 +108,7 @@ export default function MemeDetailsPage() {
     setIsCommentSectionVisible(!isCommentSectionVisible);
   };
 
-  if (!meme) return <p>Loading meme details...</p>;
+  if (!meme || loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <PrivateRoute>
