@@ -7,6 +7,8 @@ import { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaComment } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaShareNodes } from "react-icons/fa6";
 
 export default function MemeDetailsPage() {
   const { memes } = useContext(MemeContext);
@@ -109,52 +111,92 @@ export default function MemeDetailsPage() {
 
   return (
     <PrivateRoute>
-      <div className="w-11/12 mx-auto flex flex-col md:flex-row p-4 mt-24 gap-6 dark:bg-gray-800 rounded-lg shadow-lg">
-        <img
+      <motion.div
+        animate={{
+          borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
+        }}
+        transition={{
+          duration: 3, // Duration of the animation
+          repeat: Infinity, // Make the animation repeat forever
+          repeatType: "loop", // The animation will loop
+        }}
+        className="w-11/12 mx-auto flex flex-col md:flex-row border-4 p-4 mt-24 gap-12 dark:bg-gray-800 rounded-lg shadow-lg"
+      >
+        <motion.img
+          className="w-full md:w-1/2 border-4 rounded-lg mb-4"
+          animate={{
+            borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
+          }}
+          transition={{
+            duration: 3, // Duration of the animation
+            repeat: Infinity, // Make the animation repeat forever
+            repeatType: "loop", // The animation will loop
+          }}
           src={meme.url}
           alt={meme.name}
-          className="w-full md:w-1/2 border-4 rounded-lg mb-4"
         />
         <div>
-          <h1 className="text-2xl font-bold mb-2 text-center">{meme.name}</h1>
+          <h1 className="text-2xl flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myGreen text-transparent bg-clip-text my-4">
+            {meme.name}
+          </h1>
 
           {/* Like & Share Buttons */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleLike}
-              className={`btn btn-outline btn-sm ${
-                isLiked ? "text-blue-500" : ""
-              }`}
-            >
-              <AiOutlineLike />
-            </button>
-            <span className="text-sm text-gray-600">{likes} Likes</span>
-
-            <button
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex">
+              <motion.button
+                animate={{
+                  backgroundColor: isLiked ? "#aefb2a" : "#1EF18C", // Change color between red and green
+                  scale: isLiked ? 1.1 : 1, // Scale up when liked
+                }}
+                transition={{
+                  duration: 0.3, // Duration of the color transition
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 25,
+                }}
+                onClick={handleLike}
+                className={`btn border-2 btn-sm mr-2`}
+                whileTap={{ scale: 0.95 }} // Slight scale down on click
+              >
+                <AiOutlineLike className="text-2xl text-white" />
+              </motion.button>
+              <span className="text-lg flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myGreen text-transparent bg-clip-text ">
+                {likes} Likes
+              </span>
+            </div>
+            <motion.button
               onClick={() => {
                 navigator.clipboard
                   .writeText(`${window.location.origin}/meme/${id}`)
                   .then(() => toast.success("Link copied to clipboard!"))
                   .catch(() => toast.error("Failed to copy link"));
               }}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition"
+              className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              whileHover={{ scale: 1.1 }} // Scale up the button on hover
+              whileTap={{ scale: 0.95 }} // Slight scale down on click
+              transition={{ duration: 0.2 }} // Smooth transition for scale effect
             >
-              🔗 Share
+              <FaShareNodes />
+            </motion.button>
+
+            <button
+              onClick={toggleCommentSection}
+              className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
+            >
+              <FaComment />{" "}
+              {!isCommentSectionVisible
+                ? "Click to Open Comment Section"
+                : "Click to Close Comment Section"}
             </button>
           </div>
 
           {/* Comment Section */}
           <div className="mt-4">
-            <button
-              onClick={toggleCommentSection}
-              className="btn btn-secondary w-full"
-            >
-              <FaComment /> {comments.length} Comments
-            </button>
-
             {isCommentSectionVisible && (
               <div className="comments-section mt-4">
-                <h3 className="text-lg font-semibold">Comments</h3>
+                <h3 className="text-lg font-semibold">
+                  {comments.length} Comments
+                </h3>
 
                 <div className="comments-list mt-2">
                   {comments.length > 0 ? (
@@ -163,11 +205,11 @@ export default function MemeDetailsPage() {
                         <p className="text-sm font-bold">
                           {comment.displayName}
                         </p>
-                        <p className="text-sm text-gray-600">{comment.text}</p>
+                        <p className="text-sm text-gray-400">{comment.text}</p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-gray-400">No comments yet.</p>
+                    <p className="text-sm ">No comments yet.</p>
                   )}
                 </div>
 
@@ -182,7 +224,10 @@ export default function MemeDetailsPage() {
                     placeholder="Add a comment..."
                     className="input input-bordered w-full mb-2"
                   />
-                  <button type="submit" className="btn btn-secondary w-full">
+                  <button
+                    type="submit"
+                    className="btn bg-gradient-to-r from-myGreen to-myYellow text-white"
+                  >
                     Add Comment
                   </button>
                 </form>
@@ -190,7 +235,7 @@ export default function MemeDetailsPage() {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </PrivateRoute>
   );
 }

@@ -1,13 +1,19 @@
-"use client";
 import React, { useContext, useState } from "react";
-import { FaComment, FaDownload } from "react-icons/fa";
+import { FaComment, FaDownload, FaRegShareSquare } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { authContext } from "@/providers/AuthProvider";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { FaShareNodes } from "react-icons/fa6";
 
 export default function MemeCard({ meme }) {
   const { user } = useContext(authContext);
+  const [comments, setComments] = useState(() => {
+    const storedComments =
+      JSON.parse(localStorage.getItem(`comments-${meme.id}`)) || [];
+    return storedComments;
+  });
 
   const [likes, setLikes] = useState(() => {
     const storedLikes = localStorage.getItem(`likes-${meme.id}`);
@@ -89,50 +95,109 @@ export default function MemeCard({ meme }) {
   };
 
   return (
-    <div className="card shadow-sm">
-      <h2 className="card-title px-10">{meme.name}</h2>
-      <figure className="px-10 pt-10 w-full lg:h-[600px] mx-auto flex justify-center items-center">
-        <img
+    <motion.div
+      className="border-4 card shadow-sm border-solid px-8"
+      animate={{
+        borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
+      }}
+      transition={{
+        duration: 3, // Duration of the animation
+        repeat: Infinity, // Make the animation repeat forever
+        repeatType: "loop", // The animation will loop
+      }}
+    >
+      <h2 className="text-2xl flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myGreen text-transparent bg-clip-text my-4">
+        {meme.name}
+      </h2>
+      <figure className=" w-full lg:h-[600px] mx-auto flex justify-center items-center">
+        <motion.img
+          className="rounded-xl w-full h-full object-cover border-4"
+          animate={{
+            borderColor: ["#1EF18C", "#FF5733", "#1EF18C"], // Colors transitioning
+          }}
+          transition={{
+            duration: 3, // Duration of the animation
+            repeat: Infinity, // Make the animation repeat forever
+            repeatType: "loop", // The animation will loop
+          }}
           src={meme.url}
           alt={meme.name}
-          className="rounded-xl w-full h-full object-cover border-4"
         />
       </figure>
-      <div className="card-body items-center">
+      <div className=" items-center">
         <div className="flex justify-between items-center w-full">
           {/* Likes Section with Animation */}
-          <div className="likes-section my-4 flex items-center justify-center">
-            <button
-              onClick={handleLike}
-              className={`btn btn-outline btn-sm mr-2 ${
-                isLiked ? "animate-like" : ""
-              }`}
-            >
-              <AiOutlineLike />
-            </button>
-            <span className="text-sm text-gray-600">{likes} Likes</span>
-          </div>
-
-          <div>
-            <button
-              onClick={handleShare}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              🔗 Share
-            </button>
+          <div className="flex gap-4 justify-center items-center">
+            <div className="likes-section my-4 flex items-center justify-center">
+              <motion.button
+                animate={{
+                  backgroundColor: isLiked ? "#aefb2a" : "#1EF18C", // Change color between red and green
+                  scale: isLiked ? 1.1 : 1, // Scale up when liked
+                }}
+                transition={{
+                  duration: 0.3, // Duration of the color transition
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 25,
+                }}
+                onClick={handleLike}
+                className={`btn border-2 btn-sm mr-2`}
+                whileTap={{ scale: 0.95 }} // Slight scale down on click
+              >
+                <AiOutlineLike className="text-2xl text-white" />
+              </motion.button>
+              <span className="text-lg flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myGreen text-transparent bg-clip-text ">
+                {likes} Likes
+              </span>
+            </div>
+            <Link className="sm:flex gap-2 hidden " href={`/meme/${meme?.id}`}>
+              <motion.button
+                whileHover={{ scale: 1.1 }} // Scale up the button on hover
+                whileTap={{ scale: 0.95 }} // Slight scale down on click
+                transition={{ duration: 0.2 }} // Smooth transition for scale effect
+                className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              >
+                <FaComment />
+              </motion.button>
+              <span className="text-lg flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myGreen text-transparent bg-clip-text ">
+                {comments.length} Comments
+              </span>
+            </Link>
           </div>
 
           {/* Download Button */}
           <div className="card-actions my-4">
-            <Link className="btn btn-secondary" href={`/meme/${meme.id}`}>
-              Details
-            </Link>
-            <button className="btn btn-primary" onClick={handleDownload}>
+            <motion.button
+              onClick={handleShare}
+              className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              whileHover={{ scale: 1.1 }} // Scale up the button on hover
+              whileTap={{ scale: 0.95 }} // Slight scale down on click
+              transition={{ duration: 0.2 }} // Smooth transition for scale effect
+            >
+              <FaShareNodes />
+            </motion.button>
+            <motion.button
+              className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+              whileHover={{ scale: 1.1 }} // Scale up the button on hover
+              whileTap={{ scale: 0.95 }} // Slight scale down on click
+              transition={{ duration: 0.2 }} // Smooth transition for scale effect
+              onClick={handleDownload}
+            >
               <FaDownload />
-            </button>
+            </motion.button>
+            <Link href={`/meme/${meme?.id}`}>
+              <motion.button
+                className="px-4 py-2 bg-myGreen text-white rounded-lg hover:bg-green-700 transition"
+                whileHover={{ scale: 1.1 }} // Scale up the button on hover
+                whileTap={{ scale: 0.95 }} // Slight scale down on click
+                transition={{ duration: 0.2 }} // Smooth transition for scale effect
+              >
+                <FaRegShareSquare />
+              </motion.button>
+            </Link>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

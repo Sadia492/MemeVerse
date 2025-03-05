@@ -71,9 +71,9 @@ export default function Navbar() {
       className={`w-full fixed top-0 z-10 transition-all duration-500 ease-in-out ${
         router.pathname === "/"
           ? isScrolled
-            ? "bg-secondary/50 backdrop-blur-md text-white" // Background color when scrolled on homepage
+            ? "bg-myGreen backdrop-blur-md text-white" // Background color when scrolled on homepage
             : "bg-transparent" // Transparent background on homepage
-          : "bg-secondary/45 backdrop-blur-xl" // Non-transparent background on other pages
+          : "bg-myGreen backdrop-blur-xl" // Non-transparent background on other pages
       }`}
     >
       <div className="navbar lg:w-11/12 mx-auto">
@@ -102,7 +102,7 @@ export default function Navbar() {
               {links}
             </ul>
           </div>
-          <a className="text-3xl flex items-center justify-center font-bold bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
+          <a className="text-3xl flex items-center justify-center font-bold bg-gradient-to-r from-myYellow to-myYellow text-transparent bg-clip-text">
             <Image src={logo} alt="logo" className="w-20 h-20"></Image>
             MemeVerse
           </a>
