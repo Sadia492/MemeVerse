@@ -26,7 +26,6 @@ export const MemeProvider = ({ children }) => {
         setMemes([...apiMemes, ...storedMemes]); // Merge both
         setLoading(false); // Set loading to false when memes are loaded
       } catch (error) {
-        console.error("Error fetching memes:", error);
         setLoading(false); // Set loading to false even if there's an error
       }
     };

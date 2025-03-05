@@ -1,6 +1,7 @@
 // app/api/generate/route.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import toast from "react-hot-toast";
 
 export async function POST(req) {
   try {
@@ -17,7 +18,7 @@ export async function POST(req) {
     const response = result.response;
     return NextResponse.json({ output: response });
   } catch (error) {
-    console.log(error);
+    toast.error(error);
     return NextResponse.json(
       { error: "Failed to generate caption" },
       { status: 500 }

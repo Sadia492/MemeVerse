@@ -95,14 +95,12 @@ export default function page() {
           })
           .catch((error) => {
             toast.error(error.code);
-            console.log(error);
           })
           .finally(() => setLoading(false));
 
         form.reset();
       }
     } catch (error) {
-      console.log(error);
       setError("Failed to upload the avatar. Please try again.");
     }
   };

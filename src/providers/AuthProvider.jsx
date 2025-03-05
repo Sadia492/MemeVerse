@@ -22,7 +22,6 @@ export default function AuthProvider({ children }) {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
-  console.log(auth);
 
   const signOutUser = () => {
     setLoading(true);
@@ -40,7 +39,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log(currentUser);
+
       setLoading(false);
     });
     return () => {

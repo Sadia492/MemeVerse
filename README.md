@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MemeVerse
 
-## Getting Started
+🚀 **MemeVerse** is a highly interactive, multi-page meme exploration platform built with **Next.js** and **React**. Users can explore, upload, and engage with memes dynamically, featuring infinite scrolling, meme generation, AI-powered captions, and a leaderboard for the most popular memes.
 
-First, run the development server:
+🔗 **Live Demo:** [MemeVerse](https://meme-verse-olive.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌟 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔥 **Homepage**
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Displays trending memes dynamically (fetched via API).
+- Interactive animations with smooth transitions.
+- Dark mode toggle for enhanced user experience.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🎭 **Meme Explorer Page**
 
-## Learn More
+- Infinite scrolling or pagination support.
+- Filter memes by categories: Trending, New, Classic, Random.
+- Search memes with debounced API calls for performance.
+- Sort memes by likes, date, or comments.
 
-To learn more about Next.js, take a look at the following resources:
+### 🎨 **Meme Upload Page**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Upload image/GIF-based memes.
+- Add captions with a rich text editor (Jodit).
+- AI-powered meme caption generation using **@google/generative-ai**.
+- Meme preview before uploading.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🖼 **Meme Details Page**
 
-## Deploy on Vercel
+- Dynamic routing (`/meme/:id`) for individual memes.
+- View meme details, likes, comments, and sharing options.
+- Like and comment system (stored in **local storage**).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 👤 **User Profile Page**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Displays user-uploaded memes.
+- Edit profile details (Name, Bio, Profile Picture).
+- View liked memes (saved in **local storage** ).
+
+### 🏆 **Leaderboard Page**
+
+- Displays **Top 10 most liked memes**.
+- Ranks users based on engagement.
+
+### 🎭 **Fun 404 Page**
+
+- Custom **meme-based** 404 error page for invalid routes.
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js (React 19)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **State Management**: Context API
+- **Storage**: Local Storage
+- **Meme APIs**: Imgflip API
+- **Hosting & Deployment**: Vercel
+- **Authentication**: Firebase
+
+---
+
+## ⚙️ Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Sadia492/MemeVerse.git
+   cd MemeVerse
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Create a **.env.local** file for API keys and configuration (example):
+   ```
+   NEXT_PUBLIC_MEME_API_KEY=your_api_key_here
+   NEXT_PUBLIC_FIREBASE_CONFIG=your_firebase_config
+   ```
+4. Run the project:
+   ```sh
+   npm run dev
+   ```
+   The app will be live at **http://localhost:3000**
+
+---
+
+## 🚀 Usage
+
+- Visit the **homepage** to explore trending memes.
+- Navigate to **Meme Explorer** to filter, search, and sort memes.
+- Upload your own memes and generate captions using AI.
+- View details, like, comment, and share memes.
+- Check out the **Leaderboard** for top memes and rankings.
+- Edit your **profile** and view your uploaded/liked memes.
+
+---
+
+## 🌐 API Integration
+
+- **Meme APIs:**
+  - [Imgflip API](https://imgflip.com/api) – Fetch and generate memes.
+  - [Meme Generator API](https://memegen.link/) – Create custom memes dynamically.
+- **Image Upload & Storage:**
+  - [Imgbb](https://api.imgbb.com/) – Stores uploaded images.
+
+---
+
+## ⚡️ Performance Optimization
+
+- **Lazy Loading**: Images are lazy-loaded for better performance.
+- **Code Splitting**: Next.js dynamically imports components where needed.
+- **Optimized API Calls**: Axios with **debounced** search requests.
+- **Animations**: **Framer Motion** for smooth UI transitions.

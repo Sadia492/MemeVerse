@@ -11,8 +11,6 @@ export default function Page() {
   const [searchedMemes, setSearchedMemes] = useState([]); // 🔹 State for filtered memes
   const [sortBy, setSortBy] = useState(""); // 🔹 Sorting state
 
-  console.log("Filtered Memes:", filteredMemes);
-
   // 🔹 Get likes & comments from localStorage
   const getMemeStats = (id) => {
     const likes = parseInt(localStorage.getItem(`likes-${id}`)) || 0;

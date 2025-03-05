@@ -45,7 +45,6 @@ export default function Page() {
         ); // Update the prompt for AI caption
         toast.success("Image uploaded successfully!");
       } catch (error) {
-        console.error("Error uploading image:", error);
         toast.error("Failed to upload image.");
       } finally {
         setLoading(false);
@@ -92,7 +91,6 @@ export default function Page() {
         setCaption("No caption generated");
       }
     } catch (error) {
-      console.log(error);
       toast.error("Failed to generate caption.");
       setCaption("Error generating caption");
     }
@@ -138,7 +136,6 @@ export default function Page() {
       setPreviewImageUrl(null);
       setUploadedImageUrl(null); // Reset uploaded image URL
     } catch (error) {
-      console.error("Error uploading meme:", error);
       toast.error("Failed to upload meme.");
     } finally {
       setLoading(false);
