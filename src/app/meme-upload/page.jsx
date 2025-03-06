@@ -43,7 +43,7 @@ export default function Page() {
         const imageUrl = response.data.data.url;
         setUploadedImageUrl(imageUrl);
         setGeneratedPrompt(
-          `${imageUrl}, generate a single funny caption based on this image.`
+          `${imageUrl}, generate a single funny caption based on this image. Do not give any other text or quotation just give the caption.`
         );
         toast.success("Image uploaded successfully!");
       } catch (error) {
